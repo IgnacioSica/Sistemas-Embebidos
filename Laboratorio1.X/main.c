@@ -100,7 +100,7 @@
   @Remarks
     Any additional remarks
  */
-#define ARRAY_SIZE 10
+#define ARRAY_SIZE 12
 
 int exampleData;
 char exampleArray[ARRAY_SIZE];
@@ -188,13 +188,12 @@ int main(void) {
     LEDA_SetDigitalOutput();
     LEDB_SetDigitalOutput();
     
-    while(1) {        
-        LEDA_SetHigh();
-        LEDB_SetLow();
-        UT_delay();
-        
-        LEDA_SetLow();
-        LEDB_SetHigh();
+    LEDA_SetHigh();
+    LEDB_SetLow();
+    
+    while(1) {
+        LEDA_Toggle();
+        LEDB_Toggle();
         UT_delay();
     }
     return 0;
