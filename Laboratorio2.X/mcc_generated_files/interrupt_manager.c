@@ -55,4 +55,14 @@ void INTERRUPT_Initialize (void)
     // Enable Multi Vector Configuration
     INTCONbits.MVEC = 1;
     
+    //    CNAI: PORT A Change Notification
+    //    Priority: 2
+        IPC2bits.CNAIP = 2;
+    //    Sub Priority: 0
+        IPC2bits.CNAIS = 0;
+    //    CNBI: PORT B Change Notification
+    //    Priority: 2
+        IPC2bits.CNBIP = 2;
+    //    Sub Priority: 0
+        IPC2bits.CNBIS = 0;
 }
