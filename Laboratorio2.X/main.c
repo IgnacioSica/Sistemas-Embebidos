@@ -48,7 +48,8 @@
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/pin_manager.h"
 #include "platform/buttons.h"
-// #include "utils/utils.h"
+#include "./mcc_generated_files/tmr2.h"
+#include "./utils/utils.h"
 // RB15 -> S2
 // RA13 -> S3
 
@@ -77,20 +78,20 @@ int main(void)
     
     while (1)
     {
-//        BTN1_portValue = BTN1_GetValue();
-//        BTN2_portValue = BTN2_GetValue();
-//        
-//        if (BTN1_portValue == 0x0001) {
-//            LEDA_SetHigh();
-//        } else {
-//            LEDA_SetLow();
-//        }
-//        
-//        if (BTN2_portValue == 0x0001) {
-//            LEDB_SetHigh();
-//        } else {
-//            LEDB_SetLow();
-//        }
+        /*BTN1_portValue = BTN1_GetValue();
+        BTN2_portValue = BTN2_GetValue();
+        
+        if (BTN1_portValue == 0x0001) {
+            LEDA_SetHigh();
+        } else {
+            LEDA_SetLow();
+        }
+       
+        if (BTN2_portValue == 0x0001) {
+            LEDB_SetHigh();
+        } else {
+            LEDB_SetLow();
+        }*/
     }
     return 1; 
 }

@@ -135,11 +135,28 @@
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-void UT_delay() {
-    int n = UT_DELAY_CICLES;
-    
-    while (n > 0) {
-        n--;
+#include "../mcc_generated_files/tmr2.h"
+
+uint16_t period;
+uint16_t value;
+bool statusTimer1;
+
+void UT_delayms(int delay_in_ms) {
+    period = delay_in_ms;
+    TMR2_Period16BitSet(period);
+    if((value = TMR2_Period16BitGet())== period)
+    {
+        TMR2_Start();
+    }
+    TMR2_Start();
+    while(1)
+    {
+        TMR2_Tasks_16BitOperation();
+        if((statusTimer1 = TMR2_GetElapsedThenClear()) == true)
+        {
+            TMR2_Stop();
+            return;
+        }
     }
 }
 

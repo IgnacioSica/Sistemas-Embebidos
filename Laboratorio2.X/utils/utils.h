@@ -156,7 +156,7 @@ extern "C" {
             return 3;
         }
      */
-void UT_delay();
+void UT_delayms();
 
 
     /* Provide C++ Compatibility */
