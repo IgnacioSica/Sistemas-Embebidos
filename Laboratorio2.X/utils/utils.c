@@ -135,32 +135,15 @@
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-#include "../mcc_generated_files/tmr2.h"
 
-uint16_t period;
-uint16_t value;
+#include "../mcc_generated_files/tmr2.h"
+#include "../mcc_generated_files/pin_manager.h"
+
+#include <stdbool.h>
+
+uint16_t counter;
 bool statusTimer1;
 
-void UT_delayms(int delay_in_ms) {
-    period = delay_in_ms;
-    TMR2_Period16BitSet(period);
-    if((value = TMR2_Period16BitGet())== period)
-    {
-        TMR2_Start();
-    }
-    TMR2_Start();
-    while(1)
-    {
-        TMR2_Tasks_16BitOperation();
-        if((statusTimer1 = TMR2_GetElapsedThenClear()) == true)
-        {
-            TMR2_Stop();
-            return;
-        }
-    }
+bool UT_delayms(int delay_in_ms, int offset) {
+    return TMR2_SoftwareCounterGet() >= (offset + delay_in_ms);      
 }
-
-
-/* *****************************************************************************
- End of File
- */

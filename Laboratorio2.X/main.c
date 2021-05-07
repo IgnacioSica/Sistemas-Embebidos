@@ -78,20 +78,16 @@ int main(void)
     
     while (1)
     {
-        /*BTN1_portValue = BTN1_GetValue();
-        BTN2_portValue = BTN2_GetValue();
-        
-        if (BTN1_portValue == 0x0001) {
-            LEDA_SetHigh();
-        } else {
+        if(flagA && UT_delayms(2000, offsetA)){
+            flagA = false;
             LEDA_SetLow();
         }
-       
-        if (BTN2_portValue == 0x0001) {
-            LEDB_SetHigh();
-        } else {
+            
+        
+        if(flagB && UT_delayms(2000, offsetB)){
+            flagB = false;
             LEDB_SetLow();
-        }*/
+        }
     }
     return 1; 
 }

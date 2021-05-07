@@ -7,6 +7,12 @@
 extern "C" {
 #endif
 
+    int offsetA;
+    int offsetB;
+    
+    bool flagA;
+    bool flagB;
+    
     void BTN1_SetState();
     bool BTN1_GetState();
     void BTN1_Reset();

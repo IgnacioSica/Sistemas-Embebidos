@@ -156,7 +156,9 @@ extern "C" {
             return 3;
         }
      */
-void UT_delayms();
+#include <stdbool.h>
+    
+bool UT_delayms(int delay_in_ms, int offset);
 
 
     /* Provide C++ Compatibility */

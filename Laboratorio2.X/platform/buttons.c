@@ -6,9 +6,9 @@ bool BTN1_Value = false;
 bool BTN2_Value = false;
 
 void BTN1_SetState(){
-    BTN1_Value = !BTN1_Value;
-    LEDA_SetValue(BTN1_Value);
-    UT_delayms(2000000);
+    LEDA_SetValue(true);
+    flagA = true;
+    offsetA = TMR2_SoftwareCounterGet();
 }
 
 bool BTN1_GetState(){
@@ -20,9 +20,9 @@ void BTN1_Reset(){
 }
 
 void BTN2_SetState(){
-    BTN2_Value = !BTN2_Value;
-    LEDB_SetValue(BTN2_Value);
-    UT_delayms(2000);
+    LEDB_SetValue(true);
+    flagB = true;
+    offsetB = TMR2_SoftwareCounterGet();
 }
 
 bool BTN2_GetState(){

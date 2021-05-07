@@ -53,8 +53,8 @@
 
 #include "interrupt_manager.h"
 #include "exceptions.h"
-#include "watchdog.h"
 #include "tmr2.h"
+#include "watchdog.h"
 
 #warning "This file will be removed in future MCC releases. Use system.h instead."
 

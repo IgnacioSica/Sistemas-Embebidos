@@ -53,6 +53,8 @@
 /**
  Section: File specific functions
 */
+void (*TMR2_InterruptHandler)(void) = NULL;
+void TMR2_CallBack(void);
 
 /**
   Section: Data Type Definitions
@@ -76,7 +78,7 @@ typedef struct _TMR_OBJ_STRUCT
     /* Timer Elapsed */
     volatile bool           timerElapsed;
     /*Software Counter value*/
-    volatile uint8_t        count;
+    volatile int       count;
 
 } TMR_OBJ;
 
@@ -93,6 +95,13 @@ void TMR2_Initialize (void)
     //  TCKPS 1:1; T32 16 Bit; TCS PBCLK; SIDL disabled; TGATE disabled; ON enabled; 
     T2CON = 0x8000;    
 
+    if(TMR2_InterruptHandler == NULL)
+    {
+        TMR2_SetInterruptHandler(&TMR2_CallBack);
+    }
+
+    IFS0CLR = _IFS0_T2IF_MASK;
+    IEC0SET = _IEC0_T2IE_MASK;
 
     tmr2_obj.timerElapsed = false;
 
@@ -100,15 +109,24 @@ void TMR2_Initialize (void)
 
 
 
-void TMR2_Tasks_16BitOperation( void )
+void __attribute__ ((vector(_TIMER_2_VECTOR), interrupt(IPL1SOFT))) TMR2_ISR()
 {
     /* Check if the Timer Interrupt/Status is set */
-    if(IFS0bits.T2IF)
-    {
-        tmr2_obj.count++;
-        tmr2_obj.timerElapsed = true;
-        IFS0CLR = _IFS0_T2IF_MASK;
+
+    //***User Area Begin
+
+    // ticker function call;
+    // ticker is 1 -> Callback function gets called everytime this ISR executes
+    if(TMR2_InterruptHandler) 
+    { 
+        TMR2_InterruptHandler(); 
     }
+
+    //***User Area End
+
+    tmr2_obj.count++;
+    tmr2_obj.timerElapsed = true;
+    IFS0CLR = _IFS0_T2IF_MASK;
 }
 
 void TMR2_Period16BitSet( uint16_t value )
@@ -138,13 +156,25 @@ uint16_t TMR2_Counter16BitGet( void )
 }
 
 
+void __attribute__ ((weak)) TMR2_CallBack(void)
+{
+    // Add your custom callback code here
+}
 
+void  TMR2_SetInterruptHandler(void (* InterruptHandler)(void))
+{ 
+    IEC0bits.T2IE = false;
+    TMR2_InterruptHandler = InterruptHandler; 
+    IEC0bits.T2IE = true;
+}
 
 void TMR2_Start( void )
 {
     /* Reset the status information */
     tmr2_obj.timerElapsed = false;
 
+    /*Enable the interrupt*/
+    IEC0SET = _IEC0_T2IE_MASK;
 
     /* Start the Timer */
     T2CONSET = _T2CON_ON_MASK;
@@ -155,6 +185,8 @@ void TMR2_Stop( void )
     /* Stop the Timer */
     T2CONCLR = _T2CON_ON_MASK;
 
+    /*Disable the interrupt*/
+    IEC0CLR = _IEC0_T2IE_MASK;
 }
 
 bool TMR2_GetElapsedThenClear(void)
