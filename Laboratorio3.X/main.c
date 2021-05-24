@@ -46,7 +46,9 @@
   Section: Included Files
 */
 #include "mcc_generated_files/system.h"
-
+#include<stdbool.h>
+#include "mcc_generated_files/usb/usb_device.h"
+#include "mcc_generated_files/usb/usb_device_cdc.h"
 /*
                          Main application
  */
@@ -56,7 +58,14 @@ int main(void)
     SYSTEM_Initialize();
     while (1)
     {
-        // Add your application code
+        USBDeviceTasks(); 
+        if((USBGetDeviceState() < CONFIGURED_STATE) || (USBGetSuspendState() == true)){
+            continue;
+        } else {
+            CDCTxService();
+            putsUSBUSART("TEST");
+        }
+        
     }
     return 1; 
 }
