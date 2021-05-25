@@ -60,4 +60,9 @@ void INTERRUPT_Initialize (void)
         IPC7bits.USBIP = 1;
     //    Sub Priority: 0
         IPC7bits.USBIS = 0;
+    //    TI: Timer 2
+    //    Priority: 1
+        IPC4bits.T2IP = 1;
+    //    Sub Priority: 0
+        IPC4bits.T2IS = 0;
 }
