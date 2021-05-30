@@ -7,7 +7,6 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "platform/LEDs_RGB/WS2812.h"
 
 enum global_state {
@@ -15,6 +14,12 @@ enum global_state {
 	menu_FechaHora,
 	menu_ColorLeds,
     menu_Consultar,
+    ingresar_ano,
+    ingresar_mes,
+    ingresar_dia,
+    ingresar_hs,
+    ingresar_min,
+    ingresar_sec,
 };
 
 int main(void){
@@ -32,6 +37,7 @@ int main(void){
     static bool send = true;
     static uint8_t numBytes;
     static uint8_t buffer[64];
+    static struct tm datetime;
     
     ut_tmrDelay_t delay;
     
@@ -105,26 +111,136 @@ int main(void){
             if (current_state == menu_FechaHora) {
                 if(send && USBUSARTIsTxTrfReady()){
                     if(UT_delayms(&delay, current_delay)){
-                        char data[] = "Ingrese la fecha y hora del sistema en el siguiente formato: YYYYMMDDHHMMSSFFFFFF";
+                        //char data[] = " Ingrese la fecha y hora del sistema ";
+                        //putsUSBUSART(data);
+                        current_state = ingresar_ano;
+                        send = true;
+                    }
+                }
+            }
+            
+            if (current_state == ingresar_ano) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = "Ingrese el ano";
                         putsUSBUSART(data);
                         send = false;
                     }
                 }
                 if(!send && USBUSARTIsTxTrfReady()){
-                    numBytes = getsUSBUSART(buffer,sizeof(buffer));
+                    uint8_t buffer_local[6];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
                     if(numBytes > 0){
-                        putsUSBUSART(buffer);
-                        send = true;
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 3000){
+                            datetime.tm_year = i_buffer;
+                            current_state = ingresar_mes;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
                     }
                     numBytes = 0;
-                    
-                    if(isdatetime(buffer)){
-                        char data[] = " La fecha y hora se ingresaron correctamente ";
+                }
+            }
+            
+            if (current_state == ingresar_mes) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = " Ingrese el mes ";
                         putsUSBUSART(data);
-                    } else {
-                        char data[] = " Ingrese la fecha y hora en el formato correcto ";
-                        putsUSBUSART(data);
+                        send = false;
                     }
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[6];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 13){
+                            datetime.tm_mon = buffer_local;
+                            current_state = ingresar_dia;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
+                    }
+                    numBytes = 0;
+                }
+            }
+            
+            if (current_state == ingresar_dia) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = " Ingrese el dia ";
+                        putsUSBUSART(data);
+                        send = false;
+                    }
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[2];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 32){
+                            datetime.tm_mday = buffer_local;
+                            current_state = ingresar_hs;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
+                    }
+                    numBytes = 0;
+                }
+            }
+            
+            if (current_state == ingresar_hs) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = " Ingrese la hora ";
+                        putsUSBUSART(data);
+                        send = false;
+                    }
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[6];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 24){
+                            datetime.tm_hour = buffer_local;
+                            current_state = ingresar_min;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
+                    }
+                    numBytes = 0;
+                }
+            }
+            
+            if (current_state == ingresar_min) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = " Ingrese los minutos ";
+                        putsUSBUSART(data);
+                        send = false;
+                    }
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[6];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 60){
+                            datetime.tm_min = buffer_local;
+                            current_state = menu_Principal;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
+                    }
+                    numBytes = 0;
                 }
             }
         }
@@ -132,19 +248,7 @@ int main(void){
     return 1; 
 }
 
-int isdatetime(const char *datetime)
-{
-    // datetime format is YYYYMMDDHHMMSSFFFFFF
-    struct tm   time_val;
-    unsigned    microsecs;
-    int         nbytes;
-    const char *end = strftime(datetime, "%Y%m%d%H%M%S", &time_val);
 
-    if (end != 0 && strlen(end) == 6 &&
-        sscanf(end, "%6u%n", &microsecs, &nbytes) == 1 && nbytes == 6)
-        return 1;   // Valid
-    return 0;       // Invalid
-}
 /*
  int main() {
 
