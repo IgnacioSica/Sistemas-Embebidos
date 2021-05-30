@@ -20,6 +20,8 @@ enum global_state {
     ingresar_hs,
     ingresar_min,
     ingresar_sec,
+    ingresar_led,
+    ingresar_col
 };
 
 int main(void){
@@ -38,6 +40,8 @@ int main(void){
     static uint8_t numBytes;
     static uint8_t buffer[64];
     static struct tm datetime;
+    
+    static int ledAModificar = 0;
     
     ut_tmrDelay_t delay;
     
@@ -72,7 +76,7 @@ int main(void){
         
     while (1)
     {
-        WS2812_send(&led_arr, 8);
+        //WS2812_send(&led_arr, 8);
         
         CDCTxService();
         USBDeviceTasks();
@@ -239,6 +243,79 @@ int main(void){
                         } else {
                             send = true;
                         }
+                    }
+                    numBytes = 0;
+                }
+            }
+            
+            if (current_state == menu_ColorLeds) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        //char data[] = " Menu leds ";
+                        //putsUSBUSART(data);
+                        current_state = ingresar_led;
+                        send = true;
+                    }
+                }
+            }
+            
+            if (current_state == ingresar_led) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    if(UT_delayms(&delay, current_delay)){
+                        char data[] = " Ingrese el numero de led a modificar  del 1 al 8";
+                        putsUSBUSART(data);
+                        send = false;
+                    }
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[1];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 9){
+                            ledAModificar = i_buffer;
+                            current_state = ingresar_col;
+                            send = true;
+                        } else {
+                            send = true;
+                        }
+                    }
+                    numBytes = 0;
+                }
+            }
+            
+            if (current_state == ingresar_col) {
+                if(send && USBUSARTIsTxTrfReady()){
+                    char data[] = " Ingrese el codigo de color del 1 al 5";
+                    putsUSBUSART(data);
+                    send = false;
+                }
+                if(!send && USBUSARTIsTxTrfReady()){
+                    uint8_t buffer_local[1];
+                    numBytes = getsUSBUSART(buffer_local, sizeof(buffer_local));
+                    if(numBytes > 0){
+                        int i_buffer = atoi(buffer_local);
+                        if(i_buffer > 0 && i_buffer < 9){
+                            if(i_buffer == 1){
+                                led_arr[ledAModificar] = WHITE;
+                            }
+                            if(i_buffer == 2){
+                                led_arr[ledAModificar] = RED;
+                            }
+                            if(i_buffer == 3){
+                                led_arr[ledAModificar] = GREEN;
+                            }
+                            if(i_buffer == 4){
+                                led_arr[ledAModificar] = BLUE;
+                            }
+                            if(i_buffer == 5){
+                                ws2812_t rgb_values = {.r = 0, .g = 0, .b = 0};
+                                led_arr[ledAModificar] = rgb_values;
+                            }
+                            current_state = menu_Principal;
+                        }
+                        WS2812_send(&led_arr, 8);
+                        send = true;
                     }
                     numBytes = 0;
                 }
