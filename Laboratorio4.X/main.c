@@ -140,7 +140,8 @@ void colorLED( void *p_param ){
 }
 
 void controllerUSB( void *p_param ){
-    usb_params usbParams = ( usb_params * ) p_param;
+    usb_params *usbParams;
+    usbParams = ( usb_params * ) p_param;
     const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
     while(1){
         if((USBGetDeviceState() < CONFIGURED_STATE) || (USBGetSuspendState() == true)){
