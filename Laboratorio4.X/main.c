@@ -14,42 +14,37 @@
 #include <stdbool.h>
 
 static uint8_t numBytes;
-static uint8_t buffer[64];
-
-/*enum usb_state {
-    send,
-    receive
-};*/
-
-enum ledColor_state {
-    hide,
-    show_menu,
-    select_led,
-    select_color
-};
 
 typedef enum{
     send,
     receive,
     menu_principal,
-    menu_leds
+    menu_principal_option,
+    menu_leds,
+    select_led,
+    select_color
 } menu_state;
 
 typedef struct{
-    char message[256];
-    char *buffer;
     menu_state newState;
+    char *message;
+    char *buffer;
 } usb_params;
+
+menu_state current_state;
+menu_state newState;
+static char message[256] = "valor inicial";
+static uint8_t buffer[64];
+static ws2812_t led_arr[8];
 
 void blinkLED( void *p_param );
 void colorLED( void *p_param );
+void menu( void *p_param );
 void controllerUSB( void *p_param );
 
 TaskHandle_t TaskHandle = NULL;
 
-menu_state current_state;
-//enum usb_state current_stateUSB;
-//enum ledColor_state current_stateLED;
+usb_params globalParams;
 
 int main(void)
 {
@@ -58,34 +53,14 @@ int main(void)
     LEDA_SetDigitalOutput();
     LEDA_SetLow();
     
-    CDCTxService();
-    USBDeviceTasks();
-    
     current_state = send;
-    
-    //current_stateUSB = receive;
-    //current_stateLED = hide;
-    
-    ws2812_t led_arr[8];
-    time_t t;
-    srand((unsigned) time(&t));
-    
-    int i;
-    for(i = 0; i < 8; i++){
-        //ws2812_t rgb_values = {.r = rand() % 255, .g = rand() % 255, .b = rand() % 255};
-        ws2812_t rgb_values = {.r = 0, .g = 0, .b = 0};
-        led_arr[i] = rgb_values;
-    }
-    
-    
-    
-//    WS2812_send(&led_arr, 8);
+    newState = menu_principal;
+    strncpy(message, "Menu Principal:\r\n (1) Fijar fecha y hora del sistema\r\n (2) Encender/Apagar un led particular de un color fijo\r\n (3) Consultar el estado y fecha y hora", sizeof(message));
 
     xTaskCreate( blinkLED, "task1", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    
-    usb_params *p = {.message = "Cambiar color de LED\r\n Ingresa el numero del led a modificar del 1 - 8\r\n", .buffer = NULL, .newState = menu_state.send};
-    xTaskCreate( controllerUSB, "controller usb", configMINIMAL_STACK_SIZE, (void*)p, tskIDLE_PRIORITY+2, TaskHandle );
-    //xTaskCreate( colorLED, "color LED", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
+    xTaskCreate( controllerUSB, "controller usb", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
+    xTaskCreate( colorLED, "color LED", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
+    xTaskCreate( menu, "menu", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
     
     vTaskStartScheduler( );
 
@@ -105,72 +80,99 @@ void blinkLED( void *p_param ){
     }
 }
 
-/*void colorLED( void *p_param ){
+void menu( void *p_param ){
+    static int selected_OPTION = 0;
     const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
-    static int selected_LED = 0;
-    ws2812_t led_arr[8];
     while(1){
-        //USBDeviceTasks();
-        if((USBGetDeviceState() < CONFIGURED_STATE) || (USBGetSuspendState() == true)){
-            continue;
-        } else { 
-            CDCTxService();
-            if(USBUSARTIsTxTrfReady()){
-                if(current_stateLED == hide){
-                    numBytes = getsUSBUSART(buffer,sizeof(buffer));
-                    if(numBytes > 0){
-                        current_stateLED = show_menu;
-                    } else {
-                        vTaskDelay( xDelay100ms );
-                    }
-                } else if(current_stateLED == show_menu){
-                    char data[128] = "Cambiar color de LED\r\n Ingresa el numero del led a modificar del 1 - 8\r\n";
-                    putsUSBUSART(data);
-                    //putsUSBUSART(buffer);
-                    current_stateLED = select_led;
-                } else if(current_stateLED == select_led){
-                    static uint8_t local_buffer[1];
-                    numBytes = getsUSBUSART(buffer,sizeof(buffer));
-                    if(numBytes > 0){
-                        selected_LED = atoi(local_buffer);
-                        current_stateLED = select_color;
-                    } else {
-                        vTaskDelay( xDelay100ms );
-                    }
-                } else if(current_stateLED == select_color){
-                    ws2812_t rgb_values = {.r = 0, .g = 255, .b = 0};
-                    led_arr[selected_LED] = rgb_values;
-//                    WS2812_send(&led_arr, 8);
-                    current_stateLED = hide;
+        if(current_state == menu_principal){
+            strncpy(message, "\r\nMenu Principal: \r\n (1) Fijar fecha y hora del sistema\r\n (2) Encender/Apagar un led particular de un color fijo\r\n (3) Consultar el estado y fecha y hora", sizeof(message));
+            newState = menu_principal_option;
+            current_state = send;
+        } else if(current_state == menu_principal_option){
+            selected_OPTION = atoi(buffer);
+            if(selected_OPTION > 0 && selected_OPTION < 4){
+                if(selected_OPTION == 1){
+                    current_state = send;
+                }else if(selected_OPTION == 2){
+                    current_state = menu_leds;
+                }else if(selected_OPTION == 3){
+                    current_state = send;
                 }
+            } else {
+                newState = select_led;
+                current_state = send;
             }
+        } else {
+            vTaskDelay( xDelay100ms );
         }
     }
-}*/
+}
+
+void colorLED( void *p_param ){
+    static int selected_LED = 0;
+    static int selected_COLOR = 0;
+    const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
+    while(1){
+        if(current_state == menu_leds){
+            strncpy(message, "\r\nColor leds\r\n Ingrese el numero de led a modificar del 1 al 8\r\n", sizeof(message));
+            newState = select_led;
+            current_state = send;
+        } else if(current_state == select_led){
+            selected_LED = atoi(buffer);
+            if(selected_LED > 0 && selected_LED < 9){
+                strncpy(message, "\r\n Ingrese el codigo de color del 1 al 5\r\n", sizeof(message));
+                newState = select_color;
+                current_state = send;
+            } else {
+                newState = select_led;
+                current_state = send;
+            }
+        } else if (current_state == select_color){
+            selected_COLOR = atoi(buffer);
+            if(selected_COLOR > 0 && selected_COLOR < 6){
+                if(selected_COLOR == 1){
+                    led_arr[selected_LED] = WHITE;
+                }else if(selected_COLOR == 2){
+                    led_arr[selected_LED] = RED;
+                }else if(selected_COLOR == 3){
+                    led_arr[selected_LED] = GREEN;
+                }else if(selected_COLOR == 4){
+                    led_arr[selected_LED] = BLUE;
+                }else if(selected_COLOR == 5){
+                    ws2812_t rgb_values = {.r = 0, .g = 0, .b = 0};
+                    led_arr[selected_LED] = rgb_values;
+                }
+                WS2812_send(&led_arr, 8);
+                current_state = menu_principal;
+            } else {
+                newState = select_color;
+                current_state = send;
+            }
+        } else {
+            vTaskDelay( xDelay100ms );
+        }
+    }
+}
 
 void controllerUSB( void *p_param ){
-    usb_params *usbParams;
-    usbParams = ( usb_params * ) p_param;
     const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
     while(1){
         if((USBGetDeviceState() < CONFIGURED_STATE) || (USBGetSuspendState() == true)){
+            vTaskDelay( xDelay100ms );
             continue;
         } else { 
             CDCTxService();
             if(USBUSARTIsTxTrfReady()){
                 if(current_state == receive){
                     uint32_t numBytes;
-                    numBytes = getsUSBUSART(usbParams->buffer,sizeof(usbParams->buffer));
+                    numBytes = getsUSBUSART(buffer,sizeof(buffer));
                     if(numBytes > 0){
-                        current_state = usbParams->newState;
-                        vTaskDelete( TaskHandle );
+                        current_state = newState;
                     } else {
                         vTaskDelay( xDelay100ms );
                     }
                 } else if(current_state == send){
-                    char *data;
-                    data = usbParams->message;
-                    putsUSBUSART(data);
+                    putsUSBUSART(message);
                     current_state = receive;
                 }
             }
