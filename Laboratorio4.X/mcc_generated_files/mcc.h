@@ -52,8 +52,8 @@
 #include <stdbool.h>
 
 #include "rtcc.h"
-#include "watchdog.h"
 #include "usb/usb.h"
+#include "watchdog.h"
 #include "interrupt_manager.h"
 #include "exceptions.h"
 

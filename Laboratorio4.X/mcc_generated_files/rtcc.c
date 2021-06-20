@@ -74,16 +74,16 @@ void RTCC_Initialize(void)
      
    if(!RTCCTimeInitialized())
    {
-       // set 2020-05-12 15-08-29
-       RTCDATE = 0x20051202; // Year/Month/Date/Wday
-       RTCTIME = 0x15082900; //  hours/minutes/seconds
+       // set 2021-06-14 21-14-13
+       RTCDATE = 0x21061401; // Year/Month/Date/Wday
+       RTCTIME = 0x21141300; //  hours/minutes/seconds
        
    }
        // ON enabled; OUTSEL Alarm Event; WRLOCK disabled; AMASK Every Half Second; ALMRPT 0; RTCOE disabled; CHIME disabled; ALRMEN disabled; 
        RTCCON1 = 0x8000;
    
-       // DIV 15999; CLKSEL LPRC; FDIV 0; 
-       RTCCON2 = 0x3E7F0001;
+       // DIV 0; CLKSEL SOSC; FDIV 0; 
+       RTCCON2 = 0x00;
 
    // Enable RTCC 
    RTCCON1SET = (1 << _RTCCON1_ON_POSITION);
