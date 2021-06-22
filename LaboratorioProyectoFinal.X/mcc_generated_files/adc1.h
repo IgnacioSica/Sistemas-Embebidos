@@ -395,7 +395,7 @@ inline static void ADC1_ChannelSelect( ADC1_CHANNEL channel )
         ADC1_Disable(); 
     </code>
  */
-inline static uint16_t ADC1_ConversionResultGet( ADC1_CHANNEL channel )
+inline static uint16_t ADC1_ConversionResultGet()
 {
     uint16_t result;
 
@@ -441,7 +441,7 @@ inline static uint16_t ADC1_ConversionResultGet( ADC1_CHANNEL channel )
         ADC1_Disable(); 
     </code>
  */
-inline static bool ADC1_IsConversionComplete(ADC1_CHANNEL channel)
+inline static bool ADC1_IsConversionComplete()
 {
     bool status;
 
