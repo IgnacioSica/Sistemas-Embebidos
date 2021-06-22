@@ -54,6 +54,11 @@
 #include "system.h"
 
 /**
+ Section: File specific functions
+*/
+void (*ACC_INT1_InterruptHandler)(void) = NULL;
+
+/**
  Section: Driver Interface Function Definitions
 */
 void PIN_MANAGER_Initialize (void)
@@ -71,8 +76,8 @@ void PIN_MANAGER_Initialize (void)
      ***************************************************************************/
     TRISA = 0xFB77;
     TRISB = 0xAFFF;
-    TRISC = 0xFFFF;
-    TRISD = 0x001F;
+    TRISC = 0xDFFF;
+    TRISD = 0x001A;
 
     /****************************************************************************
      * Setting the Weak Pull Up and Weak Pull Down SFR(s)
@@ -101,5 +106,65 @@ void PIN_MANAGER_Initialize (void)
     ANSELB = 0x601C;
     ANSELC = 0x0123;
 
+
+    /****************************************************************************
+     * Interrupt On Change: positive
+     ***************************************************************************/
+    CNEN0Bbits.CNIE0B7 = 1;    //Pin : RB7
+    /****************************************************************************
+     * Interrupt On Change: flag
+     ***************************************************************************/
+    CNFBbits.CNFB7 = 0;    //Pin : RB7
+    /****************************************************************************
+     * Interrupt On Change: config
+     ***************************************************************************/
+    CNCONBbits.CNSTYLE = 1;    //Config for PORTB
+    CNCONBbits.ON = 1;    //Config for PORTB
+    
+    /* Initialize IOC Interrupt Handler*/
+    ACC_INT1_SetInterruptHandler(&ACC_INT1_CallBack);
+    
+    /****************************************************************************
+     * Interrupt On Change: Interrupt Enable
+     ***************************************************************************/
+    IFS0CLR= 1 << _IFS0_CNBIF_POSITION; //Clear CNBI interrupt flag
+    IEC0bits.CNBIE = 1; //Enable CNBI interrupt
+}
+
+void __attribute__ ((weak)) ACC_INT1_CallBack(void)
+{
+
+}
+
+void ACC_INT1_SetInterruptHandler(void (* InterruptHandler)(void))
+{ 
+    IEC0bits.CNBIE = 0; //Disable CNBI interrupt
+    ACC_INT1_InterruptHandler = InterruptHandler; 
+    IEC0bits.CNBIE = 1; //Enable CNBI interrupt
+}
+
+void ACC_INT1_SetIOCInterruptHandler(void *handler)
+{ 
+    ACC_INT1_SetInterruptHandler(handler);
+}
+
+/* Interrupt service routine for the CNBI interrupt. */
+void __attribute__ ((vector(_CHANGE_NOTICE_B_VECTOR), interrupt(IPL1SOFT))) _CHANGE_NOTICE_B( void )
+{
+    if(IFS0bits.CNBIF == 1)
+    {
+        if(CNFBbits.CNFB7 == 1)
+        {
+            if(ACC_INT1_InterruptHandler) 
+            { 
+                ACC_INT1_InterruptHandler(); 
+            }
+            
+            CNFBCLR = 0x80;  //Clear CNFBbits.CNFB7
+        }
+        
+        // Clear the flag
+        IFS0CLR= 1 << _IFS0_CNBIF_POSITION; // Clear IFS0bits.CNBIF
+    }
 }
 
