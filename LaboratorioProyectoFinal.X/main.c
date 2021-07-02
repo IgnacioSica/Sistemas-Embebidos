@@ -7,10 +7,12 @@
 #include "mcc_generated_files/pin_manager.h"
 #include "utils/LedsController.h"
 #include "framework/Accelerometer/Accelerometer.h"
+#include "framework/Analog/Analog.h"
 
 
 void blinkLED( void *p_param );
 void getAccelerometerValues(void *p_param);
+void getAnalogValues(void *p_param);
 
 enum system_state {
     normal,
@@ -20,7 +22,7 @@ enum system_state {
 };
 
 static enum system_state current_state;
-static Accel_t accel;
+
 
 int main(void)
 {   
@@ -30,35 +32,43 @@ int main(void)
     while(!ACCEL_init()){}
     
     xTaskCreate( blinkLED, "blink leds", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    xTaskCreate( getAccelerometerValues, " acceletometer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    //xTaskCreate( getAccelerometerValues, " acceletometer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( ANALOG_convert, " analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
+    xTaskCreate( getAnalogValues, "get value from analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    
     vTaskStartScheduler( );
 
     for(;;);
 }
 
-void getAccelerometerValues(void *p_param){
+void getAnalogValues(void *p_param){
+    uint16_t value = 0;
     
     while(1){
-        ACCEL_GetAccel (&accel);
+        vTaskDelay(pdMS_TO_TICKS(1000));
         
-        if(accel.Accel_Y < 0.8 || accel.Accel_Y > -0.8){
-            if((accel.Accel_Z > 0.8 || accel.Accel_Z < -0.8) && (accel.Accel_X > 0.8 || accel.Accel_X < -0.8)){
-                current_state = danger;
-            }
-            else if((accel.Accel_Z > 0.5 || accel.Accel_Z < -0.5) && (accel.Accel_X > 0.8 || accel.Accel_X < -0.8)){
-                current_state = warning;
-            }else{
-                current_state = normal;
-            }
-        }else{
+        value = ANALOG_getResult();
+        
+        
+    }
+}
+
+void getAccelerometerValues(void *p_param){
+    float accel = 0;
+    
+    while(1){
+        ACCEL_Mod(&accel);  
+        
+        if(accel >= 1.5){
             current_state = danger;
         }
-        //else if(accel.Accel_Z > 0.5 || accel.Accel_Z < -0.5){
-        //    current_state = warning;
-        //}
-        //else{
-        //    current_state = normal;
-        //}
+        else if(accel >= 1.2){
+            current_state = warning;
+        }
+        else{
+            current_state = normal;
+        }
+     
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 } 
