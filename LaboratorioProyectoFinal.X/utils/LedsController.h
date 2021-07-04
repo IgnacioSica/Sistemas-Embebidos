@@ -9,7 +9,7 @@
 
 void setLedColor(ws2812_t color,uint8_t ledsToLight);
 void blinkLed(ws2812_t color);
-void gradualLed(int ADCValue);
+uint8_t gradualLed(int ADCValue);
 
 //void setGradualColor(ws2812_t color, uint8_t intensity);
     

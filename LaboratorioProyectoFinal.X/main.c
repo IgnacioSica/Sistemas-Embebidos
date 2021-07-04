@@ -40,55 +40,33 @@ int main(void)
     while(!ACCEL_init()){}
     
     BTN1_SetDigitalInput();
+    BTN2_SetDigitalInput();
     
     //xTaskCreate( blinkLED, "blink leds", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     //xTaskCreate( getAccelerometerValues, " acceletometer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( ANALOG_convert, " analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
     xTaskCreate( getAnalogValues, "get value from analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( goToMenu, "go to menu", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    xTaskCreate( menuprueba, "go to prueba", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     
     vTaskStartScheduler( );
 
     for(;;);
 }
 
-void menuprueba(void *p_param){
-    while(1){
-        if(current_state == debug){
-            setLedColor(BLACK,8);
-        }
-    }
-}
-
 void goToMenu(void *p_param){
     while(1){
         if(current_state != debug && BTN1_GetValue()){
             current_state = debug;
+            
             vTaskDelay(pdMS_TO_TICKS(1000));
             
         }else if(current_state == debug && BTN1_GetValue()){
             current_state = normal;
             vTaskDelay(pdMS_TO_TICKS(1000));
         }
-        
         else{
             vTaskDelay(pdMS_TO_TICKS(10));
         }
-        
-    }
-}
-
-void getAnalogValues(void *p_param){
-    uint16_t value = 0;
-    
-    while(1){
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        
-        value = ANALOG_getResult();
-        
-        gradualLed(value);
-        
     }
 }
 

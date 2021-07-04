@@ -25,7 +25,7 @@ void blinkLed(ws2812_t color){
     }
 }
 
-void gradualLed(int ADCValue) {
+uint8_t gradualLed(int ADCValue) {
     float ADCLevel = ADCValue / 128.0;
     
     if (ADCLevel == 0) {
@@ -35,5 +35,6 @@ void gradualLed(int ADCValue) {
     ADCLevel = ceil(ADCLevel);
     uint8_t ledsToLight = ADCLevel;
     
-    setLedColor(BLUE, ledsToLight);
+    //setLedColor(BLUE, ledsToLight);
+    return ledsToLight;
 }
