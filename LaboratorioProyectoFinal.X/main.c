@@ -79,20 +79,20 @@ void blinkLED( void *p_param ){
     
     while (1) {
         if(current_state == normal){
-            setLedColor(GREEN);
+            setLedColor(GREEN, 8);
             blinkWarning = true;
             blinkDanger = true;
         } else if(current_state == warning){
             if(blinkWarning){
                 //blinkLed(YELLOW);
-                setLedColor(YELLOW);
+                setLedColor(YELLOW, 8);
                 blinkWarning = false;
             }
             blinkDanger = true;
         } else if(current_state == danger){
             if(blinkDanger){
                 //blinkLed(RED);
-                setLedColor(RED);
+                setLedColor(RED, 8);
                 blinkDanger = false;
             }
             blinkWarning = true;

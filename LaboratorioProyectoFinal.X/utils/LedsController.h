@@ -1,6 +1,5 @@
 #include "../framework/LEDs_RGB/WS2812.h"
 
-
 #ifndef _EXAMPLE_FILE_NAME_H
 #define _EXAMPLE_FILE_NAME_H
 
@@ -9,8 +8,8 @@
 #endif
 
 void setLedColor(ws2812_t color);
-
 void blinkLed(ws2812_t color);
+void gradualLed(int ADCValue);
 
 //void setGradualColor(ws2812_t color, uint8_t intensity);
     
