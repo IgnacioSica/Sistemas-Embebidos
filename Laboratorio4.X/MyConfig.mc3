@@ -37,20 +37,20 @@
          <string>class com.microchip.mcc.mcu16.systemManager.DefaultSystemManagerMcu16</string>
       </entry>
       <entry>
-         <string>JTAG</string>
-         <string>class com.microchip.mcc.mcu16.systemManager.jtag.JTAG</string>
-      </entry>
-      <entry>
          <string>CDCDevice</string>
          <string>class com.microchip.mcc.modules.mcu16.deviceclass.CDCDevice.CDCDevice</string>
       </entry>
       <entry>
-         <string>INTERNAL OSCILLATOR</string>
-         <string>class com.microchip.mcc.mcu16.systemManager.clk.Clock</string>
+         <string>JTAG</string>
+         <string>class com.microchip.mcc.mcu16.systemManager.jtag.JTAG</string>
       </entry>
       <entry>
          <string>VendorDevice</string>
          <string>class com.microchip.mcc.modules.mcu16.deviceclass.VendorDevice.VendorDevice</string>
+      </entry>
+      <entry>
+         <string>INTERNAL OSCILLATOR</string>
+         <string>class com.microchip.mcc.mcu16.systemManager.clk.Clock</string>
       </entry>
       <entry>
          <string>com.microchip.mcc.mcu16.Mcu16PeripheralLibraryLibraryModule</string>
@@ -58,8 +58,8 @@
       </entry>
    </usedClasses>
    <usedLibraries class="java.util.ArrayList">
-      <ILibraryFile class="com.microchip.mcc.core.library.BaseLibraryFile" libraryClass="com.microchip.mcc.mcu16.Mcu16PeripheralLibrary" version="1.167.0"/>
       <ILibraryFile class="com.microchip.mcc.core.library.BaseLibraryFile" libraryClass="com.microchip.mcc.USBDEVICELite.USBDEVICELite" version="1.26.2"/>
+      <ILibraryFile class="com.microchip.mcc.core.library.BaseLibraryFile" libraryClass="com.microchip.mcc.mcu16.Mcu16PeripheralLibrary" version="1.167.0"/>
       <ILibraryFile class="com.microchip.mcc.core.library.BaseLibraryFile" libraryClass="com.microchip.mcc.boardsupportlibrary.BoardSuppportLibrary" version="0.95.1"/>
    </usedLibraries>
    <tokenMap class="java.util.HashMap">

@@ -7,7 +7,7 @@
 
 #endif
 
-void setLedColor(ws2812_t color);
+void setLedColor(ws2812_t color,uint8_t ledsToLight);
 void blinkLed(ws2812_t color);
 void gradualLed(int ADCValue);
 

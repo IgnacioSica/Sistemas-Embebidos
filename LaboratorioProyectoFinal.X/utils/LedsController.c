@@ -5,8 +5,11 @@
 void setLedColor (ws2812_t color, uint8_t ledsToLight){
     ws2812_t led_arr[8];
     int i;
-    for(i = 0; i < ledsToLight; i++){
+    for(i =0; i <= ledsToLight; i++){
         led_arr[i] = color;
+    }
+    for(i = ledsToLight; i <= 8; i++){
+        led_arr[i] = BLACK;
     }
     
     WS2812_send(led_arr, 8);
