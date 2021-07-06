@@ -1,8 +1,10 @@
 #include "MenuController.h"
+#include "State.h"
 
 menu_state current_state = menu_principal;
 menu_state newState;
 
+static TaskHandle_t taskHandle_menu = menu;
 static char message[256] = "valor inicial";
 static uint8_t buffer[64];
 TaskHandle_t taskHandle_umbrales = NULL;
@@ -96,6 +98,24 @@ void getAnalogValues(void *p_param){
             }
         }else{
             vTaskDelay(pdMS_TO_TICKS(100));
+        }
+    }
+}
+
+void goToMenu(void *p_param){
+    while(1){
+        if(getCurrentState() != debug && BTN1_GetValue()){
+            setCurrentState(debug);
+            xTaskCreate( menu, "go to menu controller", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &taskHandle_menu );
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            
+        }else if(getCurrentState() == debug && BTN1_GetValue()){
+            setCurrentState(normal);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelete(taskHandle_menu);
+        }
+        else{
+            vTaskDelay(pdMS_TO_TICKS(10));
         }
     }
 }

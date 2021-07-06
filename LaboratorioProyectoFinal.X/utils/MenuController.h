@@ -1,3 +1,7 @@
+
+#ifndef MENU_CONTROLLER_H 
+#define MENU_CONTROLLER_H
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "../mcc_generated_files/system.h"
@@ -6,16 +10,12 @@
 #include "../mcc_generated_files/usb/usb_device.h"
 #include "../mcc_generated_files/usb/usb_device_cdc.h"
 #include "../mcc_generated_files/rtcc.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <stdbool.h>
 #include "LedsController.h"
-
-#ifndef MENU_CONTROLLER_H 
-#define MENU_CONTROLLER_H
 
 #ifdef __cplusplus
 
@@ -38,6 +38,7 @@ typedef struct{
 
 void menu( void *p_param );
 void controllerUSB( void *p_param );
+void goToMenu(void *p_param);
 
 #ifdef __cplusplus
 

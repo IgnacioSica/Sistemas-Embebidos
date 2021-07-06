@@ -6,9 +6,11 @@
 #include <stdbool.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "State.h"
+#include "LedsController.h"
 
 #ifdef __cplusplus
-extern "C" {
+
 #endif
 
 uint8_t warning_level;
@@ -19,9 +21,12 @@ void setWarningLevel(uint8_t level);
 
 uint8_t getDangerLevel();
 void setDangerLevel(uint8_t level);
+
+void getAccelerometerValues(void *p_param);
+void changeLedColor( void *p_param );
     
 #ifdef __cplusplus
-}
+
 #endif
 
 #endif 

@@ -11,24 +11,21 @@
 #include "utils/MenuController.h"
 #include "utils/AccelerometerController.h"
 
-void goToMenu(void *p_param);
-void getAccelerometerValues(void *p_param);
-void changeLedColor( void *p_param );
+//void goToMenu(void *p_param);
 
-enum system_state {
+/*enum system_state {
     normal,
     warning,
     danger,
     debug
-};
+};*/
 
-static enum system_state current_state;
-static TaskHandle_t taskHandle_menu = menu;
+//static TaskHandle_t taskHandle_menu = menu;
 
 
 int main(void)
 {   
-    current_state = normal;
+    //current_state = normal;
     SYSTEM_Initialize( );
     
     while(!ACCEL_init()){}
@@ -45,75 +42,6 @@ int main(void)
     vTaskStartScheduler( );
 
     for(;;);
-}
-
-void goToMenu(void *p_param){
-    while(1){
-        if(current_state != debug && BTN1_GetValue()){
-            current_state = debug;
-            xTaskCreate( menu, "go to menu controller", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &taskHandle_menu );
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            
-        }else if(current_state == debug && BTN1_GetValue()){
-            current_state = normal;
-            vTaskDelay(pdMS_TO_TICKS(1000));
-            vTaskDelete(taskHandle_menu);
-        }
-        else{
-            vTaskDelay(pdMS_TO_TICKS(10));
-        }
-    }
-}
-
-void getAccelerometerValues(void *p_param){
-    float accel = 0;
-    
-    while(1){
-        if(current_state != debug){
-            ACCEL_Mod(&accel);  
-
-            if(accel >= ((getWarningLevel() + getDangerLevel()) * 0.5)){
-                current_state = danger;
-            }
-            else if(accel >= (0.5 * getWarningLevel())){
-                current_state = warning;
-            }
-            else{
-                current_state = normal;
-            }
-        }
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-} 
-
-void changeLedColor( void *p_param ){
-    bool blinkWarning = true;
-    bool blinkDanger = true;
-    
-    while (1) {
-        if(current_state == normal){
-            setLedColor(GREEN, 8);
-            blinkWarning = true;
-            blinkDanger = true;
-        } else if(current_state == warning){
-            if(blinkWarning){
-                blinkLed(YELLOW);
-                //setLedColor(YELLOW, 8);
-                blinkWarning = false;
-                //vTaskDelay(pdMS_TO_TICKS(3000));
-            }
-            blinkDanger = true;
-        } else if(current_state == danger){
-            if(blinkDanger){
-                blinkLed(RED);
-                //setLedColor(RED, 8);
-                blinkDanger = false;
-                vTaskDelay(pdMS_TO_TICKS(3000));
-            }
-            blinkWarning = true;
-        }
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
 }
 
 void vApplicationMallocFailedHook( void ){
