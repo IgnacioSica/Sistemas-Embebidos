@@ -8,19 +8,12 @@
 #include "utils/LedsController.h"
 #include "framework/Accelerometer/Accelerometer.h"
 #include "framework/Analog/Analog.h"
+#include "utils/MenuController.h"
+#include "utils/AccelerometerController.h"
 
-typedef enum{
-    send,
-    receive,
-    menu_principal,
-    menu_principal_option
-} menu_state;
-
-void blinkLED( void *p_param );
-void getAccelerometerValues(void *p_param);
-void getAnalogValues(void *p_param);
 void goToMenu(void *p_param);
-void menuprueba(void *p_param);
+void getAccelerometerValues(void *p_param);
+void changeLedColor( void *p_param );
 
 enum system_state {
     normal,
@@ -30,6 +23,7 @@ enum system_state {
 };
 
 static enum system_state current_state;
+static TaskHandle_t taskHandle_menu = menu;
 
 
 int main(void)
@@ -42,12 +36,12 @@ int main(void)
     BTN1_SetDigitalInput();
     BTN2_SetDigitalInput();
     
-    //xTaskCreate( blinkLED, "blink leds", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    //xTaskCreate( getAccelerometerValues, " acceletometer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( changeLedColor, "blink leds", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( getAccelerometerValues, " acceletometer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( ANALOG_convert, " analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
-    xTaskCreate( getAnalogValues, "get value from analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( goToMenu, "go to menu", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    
+    xTaskCreate( controllerUSB, "controller usb", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+
     vTaskStartScheduler( );
 
     for(;;);
@@ -57,12 +51,13 @@ void goToMenu(void *p_param){
     while(1){
         if(current_state != debug && BTN1_GetValue()){
             current_state = debug;
-            
+            xTaskCreate( menu, "go to menu controller", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &taskHandle_menu );
             vTaskDelay(pdMS_TO_TICKS(1000));
             
         }else if(current_state == debug && BTN1_GetValue()){
             current_state = normal;
             vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelete(taskHandle_menu);
         }
         else{
             vTaskDelay(pdMS_TO_TICKS(10));
@@ -77,10 +72,10 @@ void getAccelerometerValues(void *p_param){
         if(current_state != debug){
             ACCEL_Mod(&accel);  
 
-            if(accel >= 1.5){
+            if(accel >= ((getWarningLevel() + getDangerLevel()) * 0.5)){
                 current_state = danger;
             }
-            else if(accel >= 1.2){
+            else if(accel >= (0.5 * getWarningLevel())){
                 current_state = warning;
             }
             else{
@@ -91,7 +86,7 @@ void getAccelerometerValues(void *p_param){
     }
 } 
 
-void blinkLED( void *p_param ){
+void changeLedColor( void *p_param ){
     bool blinkWarning = true;
     bool blinkDanger = true;
     
@@ -102,16 +97,18 @@ void blinkLED( void *p_param ){
             blinkDanger = true;
         } else if(current_state == warning){
             if(blinkWarning){
-                //blinkLed(YELLOW);
-                setLedColor(YELLOW, 8);
+                blinkLed(YELLOW);
+                //setLedColor(YELLOW, 8);
                 blinkWarning = false;
+                //vTaskDelay(pdMS_TO_TICKS(3000));
             }
             blinkDanger = true;
         } else if(current_state == danger){
             if(blinkDanger){
-                //blinkLed(RED);
-                setLedColor(RED, 8);
+                blinkLed(RED);
+                //setLedColor(RED, 8);
                 blinkDanger = false;
+                vTaskDelay(pdMS_TO_TICKS(3000));
             }
             blinkWarning = true;
         }

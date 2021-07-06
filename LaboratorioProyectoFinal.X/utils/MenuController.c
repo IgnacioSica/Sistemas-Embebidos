@@ -1,10 +1,13 @@
 #include "MenuController.h"
 
-menu_state current_state;
+menu_state current_state = menu_principal;
 menu_state newState;
 
 static char message[256] = "valor inicial";
 static uint8_t buffer[64];
+TaskHandle_t taskHandle_umbrales = NULL;
+
+void getAnalogValues(void *p_param);
 
 void menu( void *p_param ){
     static int selected_OPTION = 0;
@@ -20,6 +23,8 @@ void menu( void *p_param ){
             if(selected_OPTION > 0 && selected_OPTION < 4){
                 if(selected_OPTION == 1){
                     current_state = umbral_warning;
+                    xTaskCreate( getAnalogValues, "get analog values", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, taskHandle_umbrales);
+                    
                 }else if(selected_OPTION == 2){
                     //current_state = menu_leds;
                 }else if(selected_OPTION == 3){
@@ -70,7 +75,7 @@ void getAnalogValues(void *p_param){
     
     while(1){
         if(current_state == umbral_warning || current_state == umbral_danger){
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelay(pdMS_TO_TICKS(200));
 
             value = ANALOG_getResult();
 
@@ -79,13 +84,15 @@ void getAnalogValues(void *p_param){
             setLedColor(BLUE, valueLedsToLight);
             
             if(current_state == umbral_warning && BTN2_GetValue()){
-                //settear nivel de umbral 
+                setWarningLevel(valueLedsToLight); 
                 blinkLed(BLUE);
                 current_state = umbral_danger;
-            }else if(current_state = umbral_danger && BTN2_GetValue()){
-                //settear nivel de umbral 
+            }else if(current_state == umbral_danger && BTN2_GetValue()){
+                
+                setDangerLevel(valueLedsToLight);
                 blinkLed(BLUE);
                 current_state = menu_principal;
+                vTaskDelete(NULL);
             }
         }else{
             vTaskDelay(pdMS_TO_TICKS(100));

@@ -51,6 +51,9 @@
       <itemPath>framework/GPS/GPS.h</itemPath>
       <itemPath>framework/SIM808/SIM808.h</itemPath>
       <itemPath>utils/MenuController.h</itemPath>
+      <itemPath>utils/AccelerometerController.h</itemPath>
+      <itemPath>utils/LogController.h</itemPath>
+      <itemPath>utils/State.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -99,6 +102,9 @@
       <itemPath>framework/SIM808/SIM808.c</itemPath>
       <itemPath>framework/GPS/GPS.c</itemPath>
       <itemPath>utils/MenuController.c</itemPath>
+      <itemPath>utils/AccelerometerController.c</itemPath>
+      <itemPath>utils/LogController.c</itemPath>
+      <itemPath>utils/State.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
