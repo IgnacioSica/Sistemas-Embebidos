@@ -26,6 +26,7 @@
 
 typedef enum{
     send,
+    only_send,
     receive,
     menu_principal,
     menu_principal_option,
@@ -42,6 +43,7 @@ typedef struct{
 void menu( void *p_param );
 void controllerUSB( void *p_param );
 void goToMenu(void *p_param);
+void showControllerUSB( void *p_param );
 //void prueba(void *p_param);
 
 #ifdef __cplusplus

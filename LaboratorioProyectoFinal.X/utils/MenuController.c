@@ -28,13 +28,21 @@ void menu( void *p_param ){
                     xTaskCreate( getAnalogValues, "get analog values", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, taskHandle_umbrales);
                     
                 }else if(selected_OPTION == 2){
-                    //current_state = menu_leds;
-                    //xTaskCreate( prueba, "prueba", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+5, taskHandle_umbrales);
+                  
                     log* list = getLogs();
-                    for(uint8_t i=0; i < sizeof(list) / sizeof(log) ;i++){
-                        sprintf(message, "%d", list[i]);
-                        newState = menu_principal;
-                        current_state = send;
+                    log l1;
+                    l1.state = debug;
+                    l1.date = 1;
+                    l1.lat_lon = 2;
+                    uint8_t i;
+                    *(list + 0) = l1;
+                    
+                    //for(i=0; i < (sizeof(list) / sizeof(log)) ;i++){
+                    for(i=0; i < sizeof(list);i++){
+                        while(current_state == only_send){
+                        }
+                        sprintf(message, "%d", list[i].state);
+                        current_state = only_send;
                     }
                 }else if(selected_OPTION == 3){
                     //current_state = menu_change;
@@ -45,6 +53,26 @@ void menu( void *p_param ){
             }
         } else {
             vTaskDelay( xDelay100ms );
+        }
+    }
+}
+
+void showControllerUSB( void *p_param ){
+    const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
+    while(1){
+        if((USBGetDeviceState() < CONFIGURED_STATE) || (USBGetSuspendState() == true)){
+            vTaskDelay( xDelay100ms );
+            continue;
+        } else { 
+            CDCTxService();
+            if(USBUSARTIsTxTrfReady()){
+                if(current_state == only_send){
+                    putsUSBUSART(message);
+                    current_state = menu_principal;
+                } else {
+                    vTaskDelay( xDelay100ms );
+                }
+            }
         }
     }
 }
