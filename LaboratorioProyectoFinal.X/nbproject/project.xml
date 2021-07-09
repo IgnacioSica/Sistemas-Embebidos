@@ -18,6 +18,8 @@
                 <sourceRootElem>../../Acelerómetro/LIS3DH</sourceRootElem>
                 <sourceRootElem>../../Acelerómetro/Accelerometer</sourceRootElem>
                 <sourceRootElem>../../Analog</sourceRootElem>
+                <sourceRootElem>../../../Downloads/Modulos_para_modem/SIM808</sourceRootElem>
+                <sourceRootElem>../../../Downloads/Modulos_para_modem/GPS</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <time.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -10,18 +11,12 @@
 #include "framework/Analog/Analog.h"
 #include "utils/MenuController.h"
 #include "utils/AccelerometerController.h"
+#include "framework/GPS/GPS.h"
+#include "framework/SIM808/SIM808.h"
+#include "utils/LogController.h"
 
-//void goToMenu(void *p_param);
 
-/*enum system_state {
-    normal,
-    warning,
-    danger,
-    debug
-};*/
-
-//static TaskHandle_t taskHandle_menu = menu;
-
+//void prueba(void *p_param);
 
 int main(void)
 {   
@@ -38,11 +33,30 @@ int main(void)
     xTaskCreate( ANALOG_convert, " analog converter", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, NULL );
     xTaskCreate( goToMenu, "go to menu", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( controllerUSB, "controller usb", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    //xTaskCreate( prueba, "prueba", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( SIM808_taskCheck, "modemTask", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( SIM808_initModule, "modemIni", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, &modemInitHandle );
 
     vTaskStartScheduler( );
 
     for(;;);
 }
+
+/*
+void prueba(void *p_param){
+    uint8_t bufferFrame[256];
+    GPSPosition_t p_pos;
+    struct tm p_newtime;
+    while(1){
+        do{
+            SIM808_getNMEA(bufferFrame);
+          
+        }while(SIM808_validateNMEAFrame(bufferFrame));
+        
+        GPS_getPosition( &p_pos,  &bufferFrame);
+        GPS_getUTC( &p_newtime, &bufferFrame);
+    }
+}*/
 
 void vApplicationMallocFailedHook( void ){
     taskDISABLE_INTERRUPTS( );

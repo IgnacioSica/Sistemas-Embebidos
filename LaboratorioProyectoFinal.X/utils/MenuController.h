@@ -16,6 +16,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "LedsController.h"
+#include "../framework/GPS/GPS.h"
+#include "../framework/SIM808/SIM808.h"
+#include "LogController.h"
 
 #ifdef __cplusplus
 
@@ -39,6 +42,7 @@ typedef struct{
 void menu( void *p_param );
 void controllerUSB( void *p_param );
 void goToMenu(void *p_param);
+//void prueba(void *p_param);
 
 #ifdef __cplusplus
 

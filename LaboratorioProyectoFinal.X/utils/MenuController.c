@@ -29,6 +29,13 @@ void menu( void *p_param ){
                     
                 }else if(selected_OPTION == 2){
                     //current_state = menu_leds;
+                    //xTaskCreate( prueba, "prueba", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+5, taskHandle_umbrales);
+                    log* list = getLogs();
+                    for(uint8_t i=0; i < sizeof(list) / sizeof(log) ;i++){
+                        sprintf(message, "%d", list[i]);
+                        newState = menu_principal;
+                        current_state = send;
+                    }
                 }else if(selected_OPTION == 3){
                     //current_state = menu_change;
                 }

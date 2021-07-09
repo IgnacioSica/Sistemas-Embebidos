@@ -48,12 +48,12 @@
       <itemPath>framework/Analog/Analog.h</itemPath>
       <itemPath>framework/LEDs_RGB/WS2812.h</itemPath>
       <itemPath>utils/LedsController.h</itemPath>
-      <itemPath>framework/GPS/GPS.h</itemPath>
-      <itemPath>framework/SIM808/SIM808.h</itemPath>
       <itemPath>utils/MenuController.h</itemPath>
       <itemPath>utils/AccelerometerController.h</itemPath>
       <itemPath>utils/LogController.h</itemPath>
       <itemPath>utils/State.h</itemPath>
+      <itemPath>../../../Downloads/Modulos_para_modem/SIM808/SIM808.h</itemPath>
+      <itemPath>../../../Downloads/Modulos_para_modem/GPS/GPS.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -99,12 +99,12 @@
       <itemPath>framework/Analog/Analog.c</itemPath>
       <itemPath>framework/Accelerometer/Accelerometer.c</itemPath>
       <itemPath>utils/LedsController.c</itemPath>
-      <itemPath>framework/SIM808/SIM808.c</itemPath>
-      <itemPath>framework/GPS/GPS.c</itemPath>
       <itemPath>utils/MenuController.c</itemPath>
       <itemPath>utils/AccelerometerController.c</itemPath>
       <itemPath>utils/LogController.c</itemPath>
       <itemPath>utils/State.c</itemPath>
+      <itemPath>../../../Downloads/Modulos_para_modem/GPS/GPS.c</itemPath>
+      <itemPath>../../../Downloads/Modulos_para_modem/SIM808/SIM808.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -119,6 +119,8 @@
     <Elem>../../Acelerómetro/LIS3DH</Elem>
     <Elem>../../Acelerómetro/Accelerometer</Elem>
     <Elem>../../Analog</Elem>
+    <Elem>../../../Downloads/Modulos_para_modem/SIM808</Elem>
+    <Elem>../../../Downloads/Modulos_para_modem/GPS</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -299,70 +301,6 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
-      <item path="framework/GPS/GPS.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="framework/GPS/GPS.h" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="framework/SIM808/SIM808.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
-      <item path="framework/SIM808/SIM808.h" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <snap>
         <property key="ADC 1" value="true"/>
         <property key="AutoSelectMemRanges" value="auto"/>
