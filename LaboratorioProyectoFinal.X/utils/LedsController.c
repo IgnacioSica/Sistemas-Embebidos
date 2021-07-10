@@ -34,7 +34,5 @@ uint8_t gradualLed(int ADCValue) {
     
     ADCLevel = ceil(ADCLevel);
     uint8_t ledsToLight = ADCLevel;
-    
-    //setLedColor(BLUE, ledsToLight);
     return ledsToLight;
 }

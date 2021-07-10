@@ -8,6 +8,7 @@
 #include "task.h"
 #include "State.h"
 #include "LedsController.h"
+#include "LogController.h"
 
 #ifdef __cplusplus
 
@@ -15,6 +16,7 @@
 
 uint8_t warning_level;
 uint8_t danger_level;
+extern bool isTaskRunning;
 
 uint8_t getWarningLevel();
 void setWarningLevel(uint8_t level);

@@ -14,6 +14,7 @@ typedef enum {
 
 system_state getCurrentState();
 void setCurrentState(system_state state);
+const char* getStateName(system_state state);
 
 #ifdef __cplusplus
  

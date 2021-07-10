@@ -28,15 +28,15 @@ void menu( void *p_param ){
                     xTaskCreate( getAnalogValues, "get analog values", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &taskHandle_umbrales);
                     
                 }else if(selected_OPTION == 2){
-                    sprintf(message, "%d", 8);
-                    /*uint8_t i;
-                    for(i=0; i < 250 ;i++){
+                    
+                    uint8_t i;
+                    for(i=0; i < 250; i++){
                         while(current_state == only_send){
                         }
-                        //sprintf(message, "%d", 8);
-                        //sprintf(message, "%s, %s, %s, %d", logs[i].log_number, logs[i].lat_lon, logs[i].date, logs[i].state);
-                        current_state = only_send;*/
-                    //}
+                        strncpy(message, logs[i], sizeof(message));
+                        current_state = only_send;
+                    }
+                    current_state = menu_principal;
                 }
             } else {
                 newState = menu_principal_option;

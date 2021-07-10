@@ -2,6 +2,7 @@
 
 uint8_t warning_level = 4;
 uint8_t danger_level = 4;
+bool isTaskRunning = false;
 
 uint8_t getWarningLevel(){
     return warning_level;
@@ -27,15 +28,23 @@ void getAccelerometerValues(void *p_param){
 
             if(accel >= ((getWarningLevel() + getDangerLevel()) * 0.5)){
                 setCurrentState(danger);
+                /*if(!isTaskRunning){
+                    isTaskRunning = true;
+                    xTaskCreate( logger, "logger", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+                }*/
             }
             else if(accel >= (0.5 * getWarningLevel())){
                 setCurrentState(warning);
+                /*if(!isTaskRunning){
+                    xTaskCreate( logger, "logger", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+                    isTaskRunning = true;
+                }*/
             }
             else{
                 setCurrentState(normal);
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 } 
 
@@ -51,15 +60,12 @@ void changeLedColor( void *p_param ){
         } else if(getCurrentState() == warning){
             if(blinkWarning){
                 blinkLed(YELLOW);
-                //setLedColor(YELLOW, 8);
                 blinkWarning = false;
-                //vTaskDelay(pdMS_TO_TICKS(3000));
             }
             blinkDanger = true;
         } else if(getCurrentState() == danger){
             if(blinkDanger){
                 blinkLed(RED);
-                //setLedColor(RED, 8);
                 blinkDanger = false;
                 vTaskDelay(pdMS_TO_TICKS(3000));
             }
