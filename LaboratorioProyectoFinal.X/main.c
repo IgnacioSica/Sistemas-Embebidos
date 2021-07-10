@@ -16,11 +16,8 @@
 #include "utils/LogController.h"
 
 
-//void prueba(void *p_param);
-
 int main(void)
 {   
-    //current_state = normal;
     SYSTEM_Initialize( );
     
     while(!ACCEL_init()){}
@@ -34,7 +31,8 @@ int main(void)
     xTaskCreate( goToMenu, "go to menu", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( controllerUSB, "controller usb", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( showControllerUSB, "show controller usb", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
-    //xTaskCreate( prueba, "prueba", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( pruebaGPS, "prueba GPS", configMINIMAL_STACK_SIZE + 100, NULL, tskIDLE_PRIORITY+1, NULL );
+    xTaskCreate( logTimer, "log Timer", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( SIM808_taskCheck, "modemTask", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL );
     xTaskCreate( SIM808_initModule, "modemIni", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+2, &modemInitHandle );
 
@@ -42,22 +40,6 @@ int main(void)
 
     for(;;);
 }
-
-/*
-void prueba(void *p_param){
-    uint8_t bufferFrame[256];
-    GPSPosition_t p_pos;
-    struct tm p_newtime;
-    while(1){
-        do{
-            SIM808_getNMEA(bufferFrame);
-          
-        }while(SIM808_validateNMEAFrame(bufferFrame));
-        
-        GPS_getPosition( &p_pos,  &bufferFrame);
-        GPS_getUTC( &p_newtime, &bufferFrame);
-    }
-}*/
 
 void vApplicationMallocFailedHook( void ){
     taskDISABLE_INTERRUPTS( );

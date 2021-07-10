@@ -4,7 +4,7 @@
 menu_state current_state = menu_principal;
 menu_state newState;
 
-static TaskHandle_t taskHandle_menu = menu;
+static TaskHandle_t taskHandle_menu = NULL;
 static char message[256] = "valor inicial";
 static uint8_t buffer[64];
 TaskHandle_t taskHandle_umbrales = NULL;
@@ -17,7 +17,7 @@ void menu( void *p_param ){
     while(1){
         if(current_state == menu_principal){
             setLedColor(WHITE, 8);
-            strncpy(message, "\r\nMenu Principal: \r\n (1) Configurar umbrales\r\n (2) Encender/Apagar un led particular de un color fijo\r\n (3) Consultar el estado y fecha y hora", sizeof(message));
+            strncpy(message, "\r\nMenu Principal: \r\n (1) Configurar umbrales\r\n (2) Ver lista de logs\r\n", sizeof(message));
             newState = menu_principal_option;
             current_state = send;
         } else if(current_state == menu_principal_option){
@@ -25,27 +25,18 @@ void menu( void *p_param ){
             if(selected_OPTION > 0 && selected_OPTION < 4){
                 if(selected_OPTION == 1){
                     current_state = umbral_warning;
-                    xTaskCreate( getAnalogValues, "get analog values", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, taskHandle_umbrales);
+                    xTaskCreate( getAnalogValues, "get analog values", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &taskHandle_umbrales);
                     
                 }else if(selected_OPTION == 2){
-                  
-                    log* list = getLogs();
-                    log l1;
-                    l1.state = debug;
-                    l1.date = 1;
-                    l1.lat_lon = 2;
-                    uint8_t i;
-                    *(list + 0) = l1;
-                    
-                    //for(i=0; i < (sizeof(list) / sizeof(log)) ;i++){
-                    for(i=0; i < sizeof(list);i++){
+                    sprintf(message, "%d", 8);
+                    /*uint8_t i;
+                    for(i=0; i < 250 ;i++){
                         while(current_state == only_send){
                         }
-                        sprintf(message, "%d", list[i].state);
-                        current_state = only_send;
-                    }
-                }else if(selected_OPTION == 3){
-                    //current_state = menu_change;
+                        //sprintf(message, "%d", 8);
+                        //sprintf(message, "%s, %s, %s, %d", logs[i].log_number, logs[i].lat_lon, logs[i].date, logs[i].state);
+                        current_state = only_send;*/
+                    //}
                 }
             } else {
                 newState = menu_principal_option;
@@ -56,6 +47,7 @@ void menu( void *p_param ){
         }
     }
 }
+
 
 void showControllerUSB( void *p_param ){
     const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );

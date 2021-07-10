@@ -19,18 +19,17 @@ extern "C" {
 #endif
 
 typedef struct{
-    //unsigned long date;
+    uint8_t log_number;
     system_state state;
     uint8_t lat_lon;
     uint8_t date;
 }log;
 
-
-
-void logTimer(void *p_param);
-void logger(log* logs);
 log* getLogs();
-void prueba(void *p_param);
+extern log logs[250];
+void logTimer(void *p_param);
+void logger(void *p_param);
+void pruebaGPS(void *p_param);
 
    
 #ifdef __cplusplus
